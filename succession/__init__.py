@@ -1,3 +1,4 @@
+import itertools
 from threading import Lock
 from concurrent.futures import Future, CancelledError, TimeoutError
 
@@ -55,11 +56,15 @@ class _SuccessionIterator(object):
 class Succession(object):
     def __init__(self, initial=None):
         self._lock = Lock()
+        self._prelude = []
         self._head = _Chain()
         self._tail = self._head
 
     def iter(self, timeout=None):
-        return _SuccessionIterator(self._head, timeout)
+        with self._lock:
+            return itertools.chain(
+                self._prelude, _SuccessionIterator(self._head, timeout)
+            )
 
     def __iter__(self):
         return self.iter()
