@@ -54,8 +54,10 @@ class _SuccessionIterator(object):
 
 
 class Succession(object):
-    def __init__(self, initial=None):
+    def __init__(self, initial=None, compress=None):
         self._lock = Lock()
+        self._compress_function
+
         self._prelude = []
         self._head = _Chain()
         self._tail = self._head
@@ -72,6 +74,9 @@ class Succession(object):
     def push(self, value):
         with self._lock:
             self._tail = self._tail.push(value)
+            if self._compress_function is not None:
+                self._prelude = self._compress_function(self._prelude, value)
+                self._head = self._tail
 
     def close(self):
         """ Stop further writes and notify all waiting listeners
