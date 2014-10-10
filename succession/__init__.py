@@ -37,19 +37,17 @@ class _Chain(object):
 
 
 class _SuccessionIterator(object):
-    def __init__(self, head):
+    def __init__(self, head, timeout=None):
         self._next = head
-
-    def wait(self, timeout=None):
-        result, self._next = self._next.wait(timeout)
-        return result
+        self._timeout = timeout
 
     def __iter__(self):
         return self
 
     def __next__(self):
         try:
-            return self.wait()
+            result, self._next = self._next.wait(self._timeout)
+            return result
         except ClosedError:
             raise StopIteration()
 
@@ -60,8 +58,11 @@ class Succession(object):
         self._head = _Chain()
         self._tail = self._head
 
+    def iter(self, timeout=None):
+        return _SuccessionIterator(self._head, timeout)
+
     def __iter__(self):
-        return _SuccessionIterator(self._head)
+        return self.iter()
 
     def push(self, value):
         with self._lock:
