@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='successsion',
+    name='succession',
     url='github.com/bwhmather/succession',
-    version='0.1.0',
+    version='0.1.1',
     author='Ben Mather',
     author_email='bwhmather@bwhmather.com',
     maintainer='',
