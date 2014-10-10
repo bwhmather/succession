@@ -56,7 +56,7 @@ class _SuccessionIterator(object):
 class Succession(object):
     def __init__(self, initial=None, compress=None):
         self._lock = Lock()
-        self._compress_function
+        self._compress_function = compress
 
         self._prelude = []
         self._head = _Chain()
