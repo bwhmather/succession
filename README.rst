@@ -25,5 +25,5 @@ License
 The project is licensed under the BSD license.  See `LICENSE`_ for details.
 
 
-.. pypi:: https://pypi.python.org/pypi/sucession
-.. LICENSE:: ./LICENSE
+.. _pypi: https://pypi.python.org/pypi/sucession
+.. _LICENSE: ./LICENSE
