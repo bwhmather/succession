@@ -63,6 +63,14 @@ class Succession(object):
         self._tail = self._head
 
     def iter(self, timeout=None):
+        """Returns an iterator over items in the succession.  Should be used
+        instead of :py:func:`iter` if a timeout is desired.
+
+        :param timeout:
+            The time calls to :py:func:`next` should wait for an item before
+            raising a :py:exception:`TimeoutError` exception.  If not provided
+            the iterator will block indefinitely.
+        """
         with self._lock:
             return itertools.chain(
                 self._prelude, _SuccessionIterator(self._head, timeout)
@@ -79,7 +87,7 @@ class Succession(object):
                 self._head = self._tail
 
     def close(self):
-        """ Stop further writes and notify all waiting listeners
+        """Stop further writes and notify all waiting listeners
         """
         with self._lock:
             self._tail.close()
