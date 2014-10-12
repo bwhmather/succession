@@ -115,6 +115,8 @@ class Succession(object):
 
     def drop(self):
         with self._lock:
+            dropped = self._head()
             self._root = self._cursor
+            return dropped
 
 __all__ = ['ClosedError', 'TimeoutError', 'Succession']
