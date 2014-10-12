@@ -14,10 +14,10 @@ Recommended method is to use the version from `pypi`_
 
 Links
 -----
-  - Source code: https://github.com/bwhmather/sucecssion
+  - Source code: https://github.com/bwhmather/succession
   - Issue tracker: https://github.com/bwhmather/succession/issues
   - Continuous integration: https://travis-ci.org/bwhmather/succession
-  - PyPI: https://pypi.python.org/pypi/sucession
+  - PyPI: https://pypi.python.org/pypi/succession
 
 
 License
