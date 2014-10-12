@@ -59,8 +59,8 @@ class Succession(object):
         self._compress_function = compress
 
         self._prelude = []
-        self._head = _Chain()
-        self._tail = self._head
+        self._root = _Chain()
+        self._cursor = self._root
 
     def iter(self, timeout=None):
         """Returns an iterator over items in the succession.  Should be used
@@ -73,7 +73,7 @@ class Succession(object):
         """
         with self._lock:
             return itertools.chain(
-                self._prelude, _SuccessionIterator(self._head, timeout)
+                self._prelude, _SuccessionIterator(self._root, timeout)
             )
 
     def __iter__(self):
@@ -81,19 +81,19 @@ class Succession(object):
 
     def push(self, value):
         with self._lock:
-            self._tail = self._tail.push(value)
+            self._cursor = self._cursor.push(value)
             if self._compress_function is not None:
                 self._prelude = self._compress_function(self._prelude, value)
-                self._head = self._tail
+                self._root = self._cursor
 
     def close(self):
         """Stop further writes and notify all waiting listeners
         """
         with self._lock:
-            self._tail.close()
+            self._cursor.close()
 
     def drop(self):
         with self._lock:
-            self._head = self._tail
+            self._root = self._cursor
 
 __all__ = ['ClosedError', 'TimeoutError', 'Succession']
