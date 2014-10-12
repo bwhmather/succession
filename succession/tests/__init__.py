@@ -78,6 +78,18 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_start), [1, 2, 3, 4, 5])
         self.assertEqual(list(from_end), [15])
 
+    def test_head(self):
+        succession = Succession()
+
+        self.assertEqual(list(succession.head()), [])
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+
+        self.assertEqual(list(succession.head()), [1, 2, 3, 4, 5])
+
+        succession.close()
+
     def test_drop(self):
         succession = Succession()
 

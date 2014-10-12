@@ -62,6 +62,21 @@ class Succession(object):
         self._root = _Chain()
         self._cursor = self._root
 
+    def _head(self):
+        """Same as `head` but does not attempt to acquire the succession lock
+        """
+        try:
+            yield from self._iter(timeout=0)
+        except TimeoutError:
+            raise StopIteration()
+
+    def head(self):
+        """Returns an non-blocking iterator over all items that have already
+        been added to the succession.
+        """
+        with self._lock:
+            return self._head()
+
     def _iter(self, timeout=None):
         """Returns an iterator over items in the succession without acquiring
         the succession lock.
