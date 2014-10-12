@@ -78,6 +78,20 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_start), [1, 2, 3, 4, 5])
         self.assertEqual(list(from_end), [15])
 
+    def test_drop(self):
+        succession = Succession()
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+        succession.drop()
+
+        for i in [6, 7, 8, 9, 10]:
+            succession.push(i)
+        succession.close()
+
+        self.assertEqual(list(succession), [6, 7, 8, 9, 10])
+
+
 loader = unittest.TestLoader()
 suite = unittest.TestSuite((
     loader.loadTestsFromTestCase(TestSuccession),
