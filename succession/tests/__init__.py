@@ -61,6 +61,72 @@ class TestSuccession(unittest.TestCase):
 
         self.assertEqual(list(succession), [1, 2, 3, 4, 5])
 
+    def test_compress(self):
+        def accumulate(start, new):
+            return [sum(start) + new]
+
+        succession = Succession(compress=accumulate)
+
+        from_start = succession.iter()
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+        succession.close()
+
+        from_end = succession.iter()
+
+        self.assertEqual(list(from_start), [1, 2, 3, 4, 5])
+        self.assertEqual(list(from_end), [15])
+
+    def test_head(self):
+        succession = Succession()
+
+        self.assertEqual(list(succession.head()), [])
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+
+        self.assertEqual(list(succession.head()), [1, 2, 3, 4, 5])
+
+        succession.close()
+
+    def test_drop(self):
+        succession = Succession()
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+        succession.drop()
+
+        for i in [6, 7, 8, 9, 10]:
+            succession.push(i)
+        succession.close()
+
+        self.assertEqual(list(succession), [6, 7, 8, 9, 10])
+
+    def test_echo(self):
+        req = Succession()
+        res = Succession()
+
+        def echo():
+            for m in req:
+                res.push(m)
+            res.close()
+
+        t = threading.Thread(target=echo)
+        t.start()
+
+        res_iter = iter(res)
+
+        req.push(1)
+        self.assertEqual(next(res_iter), 1)
+        req.push(2)
+        self.assertEqual(next(res_iter), 2)
+        req.push(3)
+        self.assertEqual(next(res_iter), 3)
+        req.close()
+
+        t.join()
+
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite((

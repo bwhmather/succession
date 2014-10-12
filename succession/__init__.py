@@ -1,3 +1,4 @@
+import itertools
 from threading import Lock
 from concurrent.futures import Future, CancelledError, TimeoutError
 
@@ -37,44 +38,85 @@ class _Chain(object):
 
 
 class _SuccessionIterator(object):
-    def __init__(self, head):
+    def __init__(self, head, timeout=None):
         self._next = head
-
-    def wait(self, timeout=None):
-        result, self._next = self._next.wait(timeout)
-        return result
+        self._timeout = timeout
 
     def __iter__(self):
         return self
 
     def __next__(self):
         try:
-            return self.wait()
+            result, self._next = self._next.wait(self._timeout)
+            return result
         except ClosedError:
             raise StopIteration()
 
 
 class Succession(object):
-    def __init__(self, initial=None):
+    def __init__(self, initial=None, compress=None):
         self._lock = Lock()
-        self._head = _Chain()
-        self._tail = self._head
+        self._compress_function = compress
+
+        self._prelude = []
+        self._root = _Chain()
+        self._cursor = self._root
+
+    def _head(self):
+        """Same as `head` but does not attempt to acquire the succession lock
+        """
+        try:
+            yield from self._iter(timeout=0)
+        except TimeoutError:
+            raise StopIteration()
+
+    def head(self):
+        """Returns an non-blocking iterator over all items that have already
+        been added to the succession.
+        """
+        with self._lock:
+            return self._head()
+
+    def _iter(self, timeout=None):
+        """Returns an iterator over items in the succession without acquiring
+        the succession lock.
+        """
+        return itertools.chain(
+            self._prelude, _SuccessionIterator(self._root, timeout)
+        )
+
+    def iter(self, timeout=None):
+        """Returns an iterator over items in the succession.  Should be used
+        instead of :py:func:`iter` if a timeout is desired.
+
+        :param timeout:
+            The time calls to :py:func:`next` should wait for an item before
+            raising a :py:exception:`TimeoutError` exception.  If not provided
+            the iterator will block indefinitely.
+        """
+        with self._lock:
+            return self._iter(timeout=timeout)
 
     def __iter__(self):
-        return _SuccessionIterator(self._head)
+        return self.iter()
 
     def push(self, value):
         with self._lock:
-            self._tail = self._tail.push(value)
+            self._cursor = self._cursor.push(value)
+            if self._compress_function is not None:
+                self._prelude = self._compress_function(self._prelude, value)
+                self._root = self._cursor
 
     def close(self):
-        """ Stop further writes and notify all waiting listeners
+        """Stop further writes and notify all waiting listeners
         """
         with self._lock:
-            self._tail.close()
+            self._cursor.close()
 
     def drop(self):
         with self._lock:
-            self._head = self._tail
+            dropped = self._head()
+            self._root = self._cursor
+            return dropped
 
 __all__ = ['ClosedError', 'TimeoutError', 'Succession']
