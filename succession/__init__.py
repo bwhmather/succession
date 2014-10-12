@@ -62,6 +62,14 @@ class Succession(object):
         self._root = _Chain()
         self._cursor = self._root
 
+    def _iter(self, timeout=None):
+        """Returns an iterator over items in the succession without acquiring
+        the succession lock.
+        """
+        return itertools.chain(
+            self._prelude, _SuccessionIterator(self._root, timeout)
+        )
+
     def iter(self, timeout=None):
         """Returns an iterator over items in the succession.  Should be used
         instead of :py:func:`iter` if a timeout is desired.
@@ -72,9 +80,7 @@ class Succession(object):
             the iterator will block indefinitely.
         """
         with self._lock:
-            return itertools.chain(
-                self._prelude, _SuccessionIterator(self._root, timeout)
-            )
+            return self._iter(timeout=timeout)
 
     def __iter__(self):
         return self.iter()
