@@ -91,6 +91,30 @@ class TestSuccession(unittest.TestCase):
 
         self.assertEqual(list(succession), [6, 7, 8, 9, 10])
 
+    def test_echo(self):
+        req = Succession()
+        res = Succession()
+
+        def echo():
+            for m in req:
+                res.push(m)
+            res.close()
+
+        t = threading.Thread(target=echo)
+        t.start()
+
+        res_iter = iter(res)
+
+        req.push(1)
+        self.assertEqual(next(res_iter), 1)
+        req.push(2)
+        self.assertEqual(next(res_iter), 2)
+        req.push(3)
+        self.assertEqual(next(res_iter), 3)
+        req.close()
+
+        t.join()
+
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite((
