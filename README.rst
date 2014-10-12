@@ -1,3 +1,29 @@
 Succession
 ==========
-A python library providing concurrent push based lazy linked lists
+A python library providing concurrent push based lazy linked lists.
+
+
+Installation
+------------
+Recommended method is to use the version from `pypi`_
+
+.. code::
+
+    pip install succession
+
+
+Links
+-----
+  - Source code: https://github.com/bwhmather/sucecssion
+  - Issue tracker: https://github.com/bwhmather/succession/issues
+  - Continuous integration: https://travis-ci.org/bwhmather/succession
+  - PyPI: https://pypi.python.org/pypi/sucession
+
+
+License
+-------
+The project is licensed under the BSD license.  See `LICENSE`_ for details.
+
+
+.. pypi:: https://pypi.python.org/pypi/sucession
+.. LICENSE:: LICENSE
