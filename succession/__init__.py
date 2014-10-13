@@ -113,6 +113,18 @@ class Succession(object):
         with self._lock:
             self._cursor.close()
 
+    def compress(self, function):
+        """Applies function to an iterable of items in the succession and
+        replaces the items with the result.
+
+        :param function:
+            A function taking an iterable of items and returning an equivalent
+            iterable of items to replace them with
+        """
+        with self._lock:
+            self._prelude = list(function(self._head()))
+            self._root = self._cursor
+
     def drop(self):
         with self._lock:
             dropped = self._head()
