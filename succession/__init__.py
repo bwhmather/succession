@@ -126,6 +126,10 @@ class Succession(object):
             self._root = self._cursor
 
     def drop(self):
+        """Remove all items from the succession
+
+        This does not affect existing iterators over the succession.
+        """
         with self._lock:
             dropped = self._head()
             self._prelude = []
