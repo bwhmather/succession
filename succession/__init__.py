@@ -104,7 +104,7 @@ class Succession(object):
         with self._lock:
             self._cursor = self._cursor.push(value)
             if self._compress_function is not None:
-                self._prelude = self._compress_function(self._prelude, value)
+                self._prelude = self._compress_function(self._head())
                 self._root = self._cursor
 
     def close(self):
