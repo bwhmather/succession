@@ -62,10 +62,7 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(succession), [1, 2, 3, 4, 5])
 
     def test_compress(self):
-        def accumulate(start, new):
-            return [sum(start) + new]
-
-        succession = Succession(compress=accumulate)
+        succession = Succession(compress=lambda items: [sum(items)])
 
         from_start = succession.iter()
 

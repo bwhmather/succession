@@ -3,6 +3,9 @@ from threading import Lock
 from concurrent.futures import Future, CancelledError, TimeoutError
 
 
+_UNDEFINED = object()
+
+
 class ClosedError(Exception):
     pass
 
@@ -54,8 +57,9 @@ class _SuccessionIterator(object):
 
 
 class Succession(object):
-    def __init__(self, initial=None, compress=None):
+    def __init__(self, initial=None, drop=False, compress=None):
         self._lock = Lock()
+        self._drop_after_push = drop
         self._compress_function = compress
 
         self._prelude = []
@@ -71,7 +75,7 @@ class Succession(object):
             raise StopIteration()
 
     def head(self):
-        """Returns an non-blocking iterator over all items that have already
+        """Returns a non-blocking iterator over all items that have already
         been added to the succession.
         """
         with self._lock:
@@ -100,11 +104,16 @@ class Succession(object):
     def __iter__(self):
         return self.iter()
 
-    def push(self, value):
+    def push(self, value, *, drop=_UNDEFINED, compress=_UNDEFINED):
+        drop = self._drop_after_push if drop is _UNDEFINED else drop
+        drop = self._compress_function if compress is _UNDEFINED else compress
+
         with self._lock:
             self._cursor = self._cursor.push(value)
-            if self._compress_function is not None:
-                self._prelude = self._compress_function(self._prelude, value)
+            if self._drop_after_push:
+                self._root = self._cursor
+            elif self._compress_function is not None:
+                self._prelude = self._compress_function(self._head())
                 self._root = self._cursor
 
     def close(self):
@@ -113,9 +122,26 @@ class Succession(object):
         with self._lock:
             self._cursor.close()
 
+    def compress(self, function):
+        """Applies function to an iterable of items in the succession and
+        replaces the items with the result.
+
+        :param function:
+            A function taking an iterable of items and returning an equivalent
+            iterable of items to replace them with
+        """
+        with self._lock:
+            self._prelude = list(function(self._head()))
+            self._root = self._cursor
+
     def drop(self):
+        """Remove all items from the succession
+
+        This does not affect existing iterators over the succession.
+        """
         with self._lock:
             dropped = self._head()
+            self._prelude = []
             self._root = self._cursor
             return dropped
 
