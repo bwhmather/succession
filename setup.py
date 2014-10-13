@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name='succession',
     url='https://github.com/bwhmather/succession',
-    version='0.2.1',
+    version='0.3.0',
     author='Ben Mather',
     author_email='bwhmather@bwhmather.com',
     maintainer='',
