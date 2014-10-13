@@ -116,6 +116,7 @@ class Succession(object):
     def drop(self):
         with self._lock:
             dropped = self._head()
+            self._prelude = []
             self._root = self._cursor
             return dropped
 
