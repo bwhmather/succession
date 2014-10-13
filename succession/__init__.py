@@ -71,7 +71,7 @@ class Succession(object):
             raise StopIteration()
 
     def head(self):
-        """Returns an non-blocking iterator over all items that have already
+        """Returns a non-blocking iterator over all items that have already
         been added to the succession.
         """
         with self._lock:
