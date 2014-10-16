@@ -89,10 +89,13 @@ class TestSuccession(unittest.TestCase):
 
     def test_drop(self):
         succession = Succession()
+        root = weakref.ref(succession._root)
 
         for i in [1, 2, 3, 4, 5]:
             succession.push(i)
         succession.drop()
+        gc.collect()
+        self.assertIsNone(root())
 
         for i in [6, 7, 8, 9, 10]:
             succession.push(i)
