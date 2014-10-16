@@ -61,6 +61,19 @@ class TestSuccession(unittest.TestCase):
 
         self.assertEqual(list(succession), [1, 2, 3, 4, 5])
 
+    def test_release_iter(self):
+        succession = Succession()
+        root = weakref.ref(succession._root)
+        iterator = weakref.ref(iter(succession))
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+        succession.drop()
+
+        gc.collect()
+        self.assertIsNone(root())
+        self.assertIsNone(iterator())
+
     def test_compress(self):
         succession = Succession(compress=lambda items: [sum(items)])
 
