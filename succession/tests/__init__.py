@@ -69,6 +69,21 @@ class TestSuccession(unittest.TestCase):
 
         self.assertEqual(list(succession.iter(timeout=0)), [1, 2, 3, 4, 5])
 
+    def test_nonzero_timeout(self):
+        succession = Succession()
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+
+        result = []
+        try:
+            for item in succession.iter(timeout=0.01):
+                result.append(item)
+        except TimeoutError:
+            self.assertEqual(result, [1, 2, 3, 4, 5])
+        else:
+            self.fail()
+
     def test_release_iter(self):
         succession = Succession()
         root = weakref.ref(succession._root)
