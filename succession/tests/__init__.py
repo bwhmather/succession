@@ -3,7 +3,7 @@ import gc
 import threading
 import unittest
 
-from succession import _Chain, _SuccessionIterator, Succession
+from succession import _Chain, _SuccessionIterator, Succession, TimeoutError
 
 
 class TestSuccession(unittest.TestCase):
@@ -60,6 +60,14 @@ class TestSuccession(unittest.TestCase):
         succession.close()
 
         self.assertEqual(list(succession), [1, 2, 3, 4, 5])
+
+    def test_zero_timeout(self):
+        succession = Succession()
+
+        for i in [1, 2, 3, 4, 5]:
+            succession.push(i)
+
+        self.assertEqual(list(succession.iter(timeout=0)), [1, 2, 3, 4, 5])
 
     def test_release_iter(self):
         succession = Succession()
