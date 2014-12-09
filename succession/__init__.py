@@ -60,6 +60,10 @@ class _SuccessionIterator(object):
         try:
             result, self._next = self._next.wait(self._timeout)
             return result
+        except TimeoutError:
+            if self._timeout == 0:
+                raise StopIteration()
+            raise
         except ClosedError:
             raise StopIteration()
 
@@ -104,7 +108,10 @@ class Succession(object):
         :param timeout:
             The time calls to :py:func:`next` should wait for an item before
             raising a :py:exception:`TimeoutError` exception.  If not provided
-            the iterator will block indefinitely.
+            the iterator will block indefinitely.  If zero the iterator will
+            yield all items currently in the succession then raise
+            :py:exception:`StopIteration` regardless of whether or not the
+            sequence has been closed.
         """
         with self._lock:
             return self._iter(timeout=timeout)
