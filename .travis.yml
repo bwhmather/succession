@@ -5,13 +5,17 @@ python:
 
 install:
   - "pip install -e ."
+  - "pip install coveralls"
   - "pip install pyflakes"
   - "pip install pep8"
 
 script:
-  - "python setup.py test"
+  - "coverage run --source=succession setup.py test"
   - "pep8 succession setup.py"
   - "pyflakes succession setup.py"
+
+after_success:
+  - "coveralls"
 
 deploy:
   provider: pypi
