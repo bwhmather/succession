@@ -2,13 +2,11 @@ language: python
 python:
   - "3.4"
 
-# command to install dependencies
 install:
   - "pip install -e ."
   - "pip install pyflakes"
   - "pip install pep8"
 
-# command to run tests
 script:
   - "python setup.py test"
   - "pep8 succession setup.py"
