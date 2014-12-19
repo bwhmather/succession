@@ -11,6 +11,7 @@ class TestSuccession(unittest.TestCase):
         chain = _Chain()
         chain.push(2)
         self.assertEqual(chain.wait_result(), 2)
+        self.assertIsInstance(chain.wait_next(), _Chain)
 
     def test_chain_iter(self):
         head = _Chain()
