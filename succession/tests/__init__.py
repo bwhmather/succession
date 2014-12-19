@@ -82,7 +82,7 @@ class TestSuccession(unittest.TestCase):
                 result.append(item)
         except TimeoutError:
             self.assertEqual(result, [1, 2, 3, 4, 5])
-        else:
+        else:  # pragma:  no cover
             self.fail()
 
     def test_release_iter(self):
