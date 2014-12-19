@@ -132,7 +132,6 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_middle), [4, 5, 6])
         self.assertEqual(list(from_end), [])
 
-
     def test_head(self):
         succession = Succession()
 
