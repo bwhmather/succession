@@ -97,7 +97,7 @@ class TestSuccession(unittest.TestCase):
         self.assertIsNone(root())
         self.assertIsNone(iterator())
 
-    def test_compress(self):
+    def test_compress_after_push(self):
         succession = Succession(compress=lambda items: [sum(items)])
 
         from_start = succession.iter()
@@ -110,6 +110,29 @@ class TestSuccession(unittest.TestCase):
 
         self.assertEqual(list(from_start), [1, 2, 3, 4, 5])
         self.assertEqual(list(from_end), [15])
+
+    def test_compress(self):
+        succession = Succession()
+
+        from_start = succession.iter()
+
+        for i in [1, 2, 3]:
+            succession.push(i)
+
+        from_middle = succession.iter()
+
+        succession.compress(lambda items: [sum(items)])
+
+        for i in [4, 5, 6]:
+            succession.push(i)
+
+        succession.close()
+
+        from_end = succession.iter()
+
+        self.assertEqual(list(from_start), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(list(from_middle), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(list(from_end), [6, 4, 5, 6])
 
     def test_drop_after_push(self):
         succession = Succession(drop=True)
