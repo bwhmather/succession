@@ -81,17 +81,15 @@ class Succession(object):
     def _head(self):
         """Same as `head` but does not attempt to acquire the succession lock
         """
-        try:
-            yield from self._iter(timeout=0)
-        except TimeoutError:
-            raise StopIteration()
+        return self._iter(timeout=0)
 
     def head(self):
         """Returns a non-blocking iterator over all items that have already
         been added to the succession.
+
+        Synonym for `iter(timeout=0)`
         """
-        with self._lock:
-            return self._head()
+        return self._head()
 
     def _iter(self, timeout=None):
         """Returns an iterator over items in the succession without acquiring
