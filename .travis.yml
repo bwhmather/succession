@@ -8,11 +8,13 @@ install:
   - "pip install coveralls"
   - "pip install pyflakes"
   - "pip install pep8"
+  - "pip install pylint"
 
 script:
   - "coverage run --source=succession setup.py test"
   - "pep8 succession setup.py"
   - "pyflakes succession setup.py"
+  - "pylint -E succession setup.py"
 
 after_success:
   - "coveralls"
