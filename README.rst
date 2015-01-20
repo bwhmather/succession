@@ -29,7 +29,7 @@ The project is licensed under the BSD license.  See `LICENSE`_ for details.
 
 
 .. |build-status| image:: https://travis-ci.org/bwhmather/succession.png?branch=develop
-    :target: http://travis-ci.org/bwhmather/succession
+    :target: https://travis-ci.org/bwhmather/succession
     :alt: Build Status
 .. |coverage| image:: https://coveralls.io/repos/bwhmather/succession/badge.png?branch=develop
     :target: https://coveralls.io/r/bwhmather/succession?branch=develop
