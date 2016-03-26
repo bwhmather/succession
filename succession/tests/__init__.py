@@ -11,6 +11,7 @@ class TestSuccession(unittest.TestCase):
         chain = _Chain()
         chain.push(2)
         self.assertEqual(chain.wait_result(), 2)
+        self.assertIsInstance(chain.wait_next(), _Chain)
 
     def test_chain_iter(self):
         head = _Chain()
@@ -81,23 +82,22 @@ class TestSuccession(unittest.TestCase):
                 result.append(item)
         except TimeoutError:
             self.assertEqual(result, [1, 2, 3, 4, 5])
-        else:
+        else:  # pragma:  no cover
             self.fail()
 
     def test_release_iter(self):
-        succession = Succession()
+        succession = Succession(compress=lambda hd: [])
         root = weakref.ref(succession._root)
         iterator = weakref.ref(iter(succession))
 
         for i in [1, 2, 3, 4, 5]:
             succession.push(i)
-        succession.drop()
 
         gc.collect()
         self.assertIsNone(root())
         self.assertIsNone(iterator())
 
-    def test_compress(self):
+    def test_compress_after_push(self):
         succession = Succession(compress=lambda items: [sum(items)])
 
         from_start = succession.iter()
@@ -111,6 +111,41 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_start), [1, 2, 3, 4, 5])
         self.assertEqual(list(from_end), [15])
 
+    def test_drop_after_push(self):
+        succession = Succession(compress=lambda hd: [])
+
+        from_start = succession.iter()
+
+        for i in [1, 2, 3]:
+            succession.push(i)
+
+        from_middle = succession.iter()
+
+        for i in [4, 5, 6]:
+            succession.push(i)
+
+        succession.close()
+
+        from_end = succession.iter()
+
+        self.assertEqual(list(from_start), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(list(from_middle), [4, 5, 6])
+        self.assertEqual(list(from_end), [])
+
+    def test_compress_iter_saved(self):
+        succession = Succession(compress=lambda hd: (i for i in hd))
+
+        succession.push(0)
+        succession.push(1)
+        succession.push(2)
+        succession.push(3)
+
+        first = succession.head()
+        second = succession.head()
+
+        self.assertEqual(list(first), [0, 1, 2, 3])
+        self.assertEqual(list(second), [0, 1, 2, 3])
+
     def test_head(self):
         succession = Succession()
 
@@ -122,22 +157,6 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(succession.head()), [1, 2, 3, 4, 5])
 
         succession.close()
-
-    def test_drop(self):
-        succession = Succession()
-        root = weakref.ref(succession._root)
-
-        for i in [1, 2, 3, 4, 5]:
-            succession.push(i)
-        succession.drop()
-        gc.collect()
-        self.assertIsNone(root())
-
-        for i in [6, 7, 8, 9, 10]:
-            succession.push(i)
-        succession.close()
-
-        self.assertEqual(list(succession), [6, 7, 8, 9, 10])
 
     def test_echo(self):
         req = Succession()

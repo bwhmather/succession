@@ -1,18 +1,24 @@
 language: python
+sudo: false
 python:
   - "3.4"
+  - "3.5"
 
-# command to install dependencies
 install:
   - "pip install -e ."
+  - "pip install coveralls"
   - "pip install pyflakes"
   - "pip install pep8"
+  - "pip install pylint"
 
-# command to run tests
 script:
-  - "python setup.py test"
+  - "coverage run --source=succession setup.py test"
   - "pep8 succession setup.py"
   - "pyflakes succession setup.py"
+  - "pylint -E succession setup.py"
+
+after_success:
+  - "coveralls"
 
 deploy:
   provider: pypi

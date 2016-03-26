@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name='succession',
     url='https://github.com/bwhmather/succession',
-    version='0.4.0',
+    version='0.5.0',
     author='Ben Mather',
     author_email='bwhmather@bwhmather.com',
     maintainer='',
@@ -19,6 +19,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3 :: Only',
     ],
     install_requires=[
     ],
