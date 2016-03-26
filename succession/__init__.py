@@ -15,11 +15,20 @@ class _Chain(object):
         self._next = Future()
 
     def push(self, value):
+        """Sets the value of this link in the chain waking up all waiting
+        listeners and returns a reference to the next link.
+        """
         next_ = _Chain()
         self._next.set_result((value, next_))
         return next_
 
     def close(self):
+        """Finish the chain at this link.  It will not given a value.
+
+        All current and future listeners will be woken with a
+        :exception:`ClosedError` and it will no longer be possible to add new
+        links.
+        """
         self._next.cancel()
 
     def wait(self, timeout=None):
@@ -66,12 +75,15 @@ class _SuccessionIterator(object):
 
 
 class Succession(object):
-    def __init__(self, initial=None, compress=None):
+    def __init__(self, *, compress=None):
         self._lock = Lock()
         self._compress_function = compress
 
         self._prelude = []
+        # `_root` is a pointer to the current head of the chain.  It should
+        # start where prelude finishes.
         self._root = _Chain()
+        # `_cursor` is a pointer to first un-pushed link in the chain.
         self._cursor = self._root
 
     def _head(self):
