@@ -69,9 +69,8 @@ class _SuccessionIterator(object):
 
 
 class Succession(object):
-    def __init__(self, initial=None, drop=False, compress=None):
+    def __init__(self, initial=None, compress=None):
         self._lock = Lock()
-        self._drop_after_push = drop
         self._compress_function = compress
 
         self._prelude = []
@@ -117,15 +116,10 @@ class Succession(object):
     def __iter__(self):
         return self.iter()
 
-    def push(self, value, *, drop=_UNDEFINED, compress=_UNDEFINED):
-        drop = self._drop_after_push if drop is _UNDEFINED else drop
-        drop = self._compress_function if compress is _UNDEFINED else compress
-
+    def push(self, value, *, compress=_UNDEFINED):
         with self._lock:
             self._cursor = self._cursor.push(value)
-            if self._drop_after_push:
-                self._root = self._cursor
-            elif self._compress_function is not None:
+            if self._compress_function is not None:
                 self._prelude = self._compress_function(self._head())
                 self._root = self._cursor
 
