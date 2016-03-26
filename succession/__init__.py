@@ -2,9 +2,6 @@ from threading import Lock
 from concurrent.futures import Future, CancelledError, TimeoutError
 
 
-_UNDEFINED = object()
-
-
 class ClosedError(Exception):
     pass
 
@@ -116,10 +113,10 @@ class Succession(object):
     def __iter__(self):
         return self.iter()
 
-    def push(self, value, *, compress=_UNDEFINED):
+    def push(self, value, *, compress=True):
         with self._lock:
             self._cursor = self._cursor.push(value)
-            if self._compress_function is not None:
+            if compress and self._compress_function:
                 self._prelude = self._compress_function(self._head())
                 self._root = self._cursor
 
