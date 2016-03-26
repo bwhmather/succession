@@ -132,6 +132,20 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_middle), [4, 5, 6])
         self.assertEqual(list(from_end), [])
 
+    def test_compress_iter_saved(self):
+        succession = Succession(compress=lambda hd: (i for i in hd))
+
+        succession.push(0)
+        succession.push(1)
+        succession.push(2)
+        succession.push(3)
+
+        first = succession.head()
+        second = succession.head()
+
+        self.assertEqual(list(first), [0, 1, 2, 3])
+        self.assertEqual(list(second), [0, 1, 2, 3])
+
     def test_head(self):
         succession = Succession()
 
