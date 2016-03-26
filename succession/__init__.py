@@ -147,15 +147,4 @@ class Succession(object):
             self._prelude = list(function(self._head()))
             self._root = self._cursor
 
-    def drop(self):
-        """Remove all items from the succession
-
-        This does not affect existing iterators over the succession.
-        """
-        with self._lock:
-            dropped = self._head()
-            self._prelude = []
-            self._root = self._cursor
-            return dropped
-
 __all__ = ['ClosedError', 'TimeoutError', 'Succession']

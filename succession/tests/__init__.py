@@ -86,13 +86,12 @@ class TestSuccession(unittest.TestCase):
             self.fail()
 
     def test_release_iter(self):
-        succession = Succession()
+        succession = Succession(compress=lambda hd: [])
         root = weakref.ref(succession._root)
         iterator = weakref.ref(iter(succession))
 
         for i in [1, 2, 3, 4, 5]:
             succession.push(i)
-        succession.drop()
 
         gc.collect()
         self.assertIsNone(root())
@@ -136,7 +135,7 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(from_end), [6, 4, 5, 6])
 
     def test_drop_after_push(self):
-        succession = Succession(drop=True)
+        succession = Succession(compress=lambda hd: [])
 
         from_start = succession.iter()
 
@@ -167,22 +166,6 @@ class TestSuccession(unittest.TestCase):
         self.assertEqual(list(succession.head()), [1, 2, 3, 4, 5])
 
         succession.close()
-
-    def test_drop(self):
-        succession = Succession()
-        root = weakref.ref(succession._root)
-
-        for i in [1, 2, 3, 4, 5]:
-            succession.push(i)
-        succession.drop()
-        gc.collect()
-        self.assertIsNone(root())
-
-        for i in [6, 7, 8, 9, 10]:
-            succession.push(i)
-        succession.close()
-
-        self.assertEqual(list(succession), [6, 7, 8, 9, 10])
 
     def test_echo(self):
         req = Succession()
