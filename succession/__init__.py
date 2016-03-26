@@ -83,7 +83,7 @@ class Succession(object):
         """Returns a non-blocking iterator over all items that have already
         been added to the succession.
 
-        Synonym for `iter(timeout=0)`
+        Synonym for ``iter(timeout=0)``
         """
         return self._head()
 
@@ -96,15 +96,16 @@ class Succession(object):
         )
 
     def iter(self, timeout=None):
-        """Returns an iterator over items in the succession.  Should be used
-        instead of :py:func:`iter` if a timeout is desired.
+        """Returns an iterator over current and future items in the succession.
+
+        Should be used instead of :func:`iter` if a timeout is desired.
 
         :param timeout:
-            The time calls to :py:func:`next` should wait for an item before
-            raising a :py:exception:`TimeoutError` exception.  If not provided
+            The time calls to :func:`next` should wait for an item before
+            raising a :exception:`TimeoutError` exception.  If not provided
             the iterator will block indefinitely.  If zero the iterator will
             yield all items currently in the succession then raise
-            :py:exception:`StopIteration` regardless of whether or not the
+            :exception:`StopIteration` regardless of whether or not the
             sequence has been closed.
         """
         with self._lock:
